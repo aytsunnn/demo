@@ -27,10 +27,10 @@ return new class extends Migration
             $table->id();
             $table->date('date_to');
             $table->date('date_from');
-            $table->bigInteger('pickupPoints_id');
+            $table->foreignId('pickupPoints_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->integer('code');
-            $table->bigInteger('status_id');
+            $table->foreignId('status_id')->constrained();
         });
 
         Schema::create('order_items', function (Blueprint $table){

@@ -57,8 +57,6 @@
                              ) }}"
                              data-supplier="{{ strtolower($product->supplier->name ?? '') }}"
                              data-quantity="{{ $product->quantity }}"
-
-
                              style="cursor: pointer"
                              onclick="selectProduct(this, {{ $product->id }})">
                             <div class="card-body d-flex">

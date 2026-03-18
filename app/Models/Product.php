@@ -36,11 +36,4 @@ class Product extends Model
         return $this->belongsTo(Manufacturer::class);
     }
 
-//    public function getImageUrlAttribute()
-//    {
-//        if ($this->image_path && file_exists(public_path('assets/images/' . $this->image_path))) {
-//            return asset('assets/images/' . $this->image_path);
-//        }
-//        return asset('assets/images/no-image.png'); // Заглушка
-//    }
 }
