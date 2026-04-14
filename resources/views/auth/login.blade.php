@@ -43,7 +43,9 @@
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Авторизоваться') }}
                                 </button>
-
+                                <a class="btn btn-secondary" href="{{route('products')}}">
+                                    Войти как гость
+                                </a>
                             </div>
                         </div>
                     </form>

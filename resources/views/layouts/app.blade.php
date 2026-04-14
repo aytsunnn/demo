@@ -12,7 +12,7 @@
     <!-- Fonts -->
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet">
     <link href="{{asset('assets/css/style.css')}}" rel="stylesheet">
-    <link href="{{asset('assets/image/icon.ico')}}" rel="icon">
+    <link href="{{asset('assets/images/icon.ico')}}" rel="icon">
 
     <!-- Scripts -->
     <script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
