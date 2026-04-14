@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Manufacturer;
 use App\Models\Product;
 use App\Models\Seller;
 use Illuminate\Http\Request;
@@ -29,7 +31,15 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        if (!auth()->check() || auth()->user()->role_id !== 1){
+            abort(403, 'Доступно только администратору');
+        }
+
+        $sellers = Seller::all();
+        $manufacturers = Manufacturer::all();
+        $categories = Category::all();
+
+        return view("products.create", compact('sellers', 'manufacturers', 'categories'));
     }
 
     /**
@@ -40,7 +50,41 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        request()->validate([
+           'article'=>'required|unique:products',
+           'name'=>'required',
+            'price'=>'required|decimal:0,2',
+            'seller_id'=>'required',
+            'manufacturer_id'=>'required',
+            'category_id'=>'required',
+            'discount'=>'required|min:0|max:100',
+            'quantity'=>'required|min:0',
+            'description'=>'required',
+            'image'=>'image:jpg,jpeg,png|max:2048|nullable',
+        ]);
+
+        $imageName = null;
+
+        if ($request->hasFile('image')){
+            $file = $request->file('image');
+            $imageName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('assets/images/'), $imageName);
+        }
+
+        Product::create([
+            'article'=>request()->article,
+            'name'=>request()->name,
+            'price'=>request()->price,
+            'seller_id'=>request()->seller_id,
+            'manufacturer_id'=>request()->manufacturer_id,
+            'category_id'=>request()->category_id,
+            'discount'=>request()->discount,
+            'quantity'=>request()->quantity,
+            'description'=>request()->description,
+            'image_path'=>$imageName,
+        ]);
+
+        return redirect()->route('products')->with('success', 'Товар успешно добавлен');
     }
 
     /**
