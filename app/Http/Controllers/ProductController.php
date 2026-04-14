@@ -7,6 +7,7 @@ use App\Models\Manufacturer;
 use App\Models\Product;
 use App\Models\Seller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {
@@ -60,7 +61,7 @@ class ProductController extends Controller
             'discount'=>'required|min:0|max:100',
             'quantity'=>'required|min:0',
             'description'=>'required',
-            'image'=>'image:jpg,jpeg,png|max:2048|nullable',
+            'image'=>'image|mimes:jpg,jpeg,png|max:2048|nullable',
         ]);
 
         $imageName = null;
@@ -106,7 +107,17 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        if (!auth()->check() || auth()->user()->role_id !== 1){
+            abort(403, 'Доступно только администратору');
+        }
+
+        $product = Product::findOrFail($id);
+
+        $sellers = Seller::all();
+        $manufacturers = Manufacturer::all();
+        $categories = Category::all();
+
+        return view("products.edit", compact('product', 'sellers', 'manufacturers', 'categories'));
     }
 
     /**
@@ -118,7 +129,60 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $product = Product::findOrFail($id);
+
+        request()->validate([
+           'article'=>'required|unique:products,article,'.$product->id,
+           'name'=>'required',
+            'price'=>'required|decimal:0,2',
+            'seller_id'=>'required',
+            'manufacturer_id'=>'required',
+            'category_id'=>'required',
+            'discount'=>'required|min:0|max:100',
+            'quantity'=>'required|min:0',
+            'description'=>'required',
+            'image'=>'image:jpg,jpeg,gif,png|nullable|max:2048',
+            'remove_image'=>'nullable|boolean',
+        ]);
+
+        $data = [
+          'article'=>$request->article,
+          'name'=>$request->name,
+          'price'=>$request->price,
+            'seller_id'=>$request->seller_id,
+            'manufacturer_id'=>$request->manufacturer_id,
+            'category_id'=>$request->category_id,
+            'discount'=>$request->discount,
+            'quantity'=>$request->quantity,
+            'description'=>$request->description,
+        ];
+
+        if ($request->remove_image == '1'){
+            if ($product->image_path){
+                $imagePath = public_path('assets/images/'.$product->image_path);
+                if (File::exists($imagePath)){
+                    File::delete($imagePath);
+                }
+            }
+            $data['image_path']=null;
+        }
+
+        if ($request->hasFile('image')){
+            if ($product->image_path){
+                $imagePath = public_path('assets/images/'.$product->image_path);
+                if (File::exists($imagePath)){
+                    File::delete($imagePath);
+                }
+            }
+            $file = $request->file('image');
+            $imageName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('assets/images/'), $imageName);
+            $data['image_path'] = $imageName;
+        }
+
+        $product->update($data);
+
+        return redirect()->route('products')->with('success', 'Товар успешно обновлен');
     }
 
     /**
@@ -129,6 +193,22 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if (!auth()->check() || auth()->user()->role_id !== 1){
+            abort(403, 'Доступно только администратору');
+        }
+
+        $product = Product::findOrFail($id);
+
+        if ($product->image_path){
+            $imagePath = public_path('assets/images/'.$product->image_path);
+            if (File::exists($imagePath)){
+                File::delete($imagePath);
+            }
+            $product->image_path = null;
+        }
+
+        $product->delete();
+
+        return redirect()->route('products')->with('success', 'Товар успешно удален');
     }
 }

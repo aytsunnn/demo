@@ -64,4 +64,35 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .product-card{
+            border: 1px solid black;
+        }
+        .product-card.selected{
+            border: 1px solid red;
+        }
+    </style>
+
+    <script>
+        let selectedProductId = null;
+
+        function selectProduct(card, id){
+            document.querySelectorAll('.product-card').forEach(c =>
+            c.classList.remove('selected'));
+
+            if(selectedProductId === id){
+                selectedProductId = null;
+            }
+
+            card.classList.add('selected');
+            selectedProductId = id;
+        }
+
+        document.getElementById('editButton').onclick = () =>{
+            if(selectedProductId){
+                location.href=`/products/${selectedProductId}/edit`;
+            }
+        }
+    </script>
 @endsection
