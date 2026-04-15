@@ -19,18 +19,45 @@
                 @if($role_id === 1 || $role_id === 2)
                     <div class="card mb-3">
                         <div class="card-body">
-                            <a href="{{route('products.create')}}" class="btn btn-primary">Добавить товар</a>
-                            <button id="editButton" class="btn btn-primary">Редактировать товар</button>
-                            <button id="deleteButton" class="btn btn-primary">Удалить товар</button>
+                            @if($role_id === 1)
+                                <a href="{{route('products.create')}}" class="btn btn-primary">Добавить товар</a>
+                                <button id="editButton" class="btn btn-primary">Редактировать товар</button>
+                                <button id="deleteButton" class="btn btn-primary">Удалить товар</button>
+                            @endif
                             <a href="/" class="btn btn-primary">Заказы</a>
+                                <div class="mb-3 mt-2">
+                                    <label for="search" class="form-label">Поиск</label>
+                                    <input type="text" class="form-control" id="search">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="filter" class="form-label">Фильтрация</label>
+                                    <select type="text" class="form-select" id="filter">
+                                        <option value="">Все поставщики</option>
+                                        @foreach($sellers as $seller)
+                                            <option value="{{$seller->id}}">{{$seller->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="">
+                                    <label for="sort" class="form-label">Сортировка</label>
+                                    <select type="text" class="form-select" id="sort">
+                                        <option value="">Без сортировки</option>
+                                        <option value="asc">По возрастанию</option>
+                                        <option value="desc">По убыванию</option>
+                                    </select>
+                                </div>
                         </div>
                     </div>
+
                 @endif
 
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" id="productsList">
                         @foreach($products as $product)
-                        <div class="card mb-3 product-card" onclick="selectProduct(this, {{$product->id}})">
+                        <div class="card mb-3 product-card"
+                             data-seller = "{{$product->seller->id}}"
+                             data-quantity = "{{$product->quantity}}"
+                             onclick="selectProduct(this, {{$product->id}})">
                             <div class="d-flex card-body">
                                 <div class="border border-dark border-2">
                                     <img src="{{$product->image_path ? asset('assets/images/'.$product->image_path) : asset('assets/images/picture.png')}}" style="width: 200px; height: 200px; object-fit: contain">
@@ -65,6 +92,11 @@
         </div>
     </div>
 
+    <form id="deleteForm" method="post">
+        @csrf
+        @method('delete')
+    </form>
+
     <style>
         .product-card{
             border: 1px solid black;
@@ -83,6 +115,7 @@
 
             if(selectedProductId === id){
                 selectedProductId = null;
+                return;
             }
 
             card.classList.add('selected');
@@ -93,6 +126,53 @@
             if(selectedProductId){
                 location.href=`/products/${selectedProductId}/edit`;
             }
+        }
+
+        document.getElementById('deleteButton').onclick = () =>{
+            if(selectedProductId && confirm('Удалить товар?')){
+                const form = document.getElementById('deleteForm');
+                form.action = `/products/${selectedProductId}`;
+                form.submit();
+            }
+        }
+
+        const search   = document.getElementById('search');
+        const seller = document.getElementById('filter');
+        const sort     = document.getElementById('sort');
+        const cards    = [...document.querySelectorAll('.product-card')];
+        const list     = document.getElementById('productsList');
+
+        [search, seller, sort].forEach(el =>
+            el.addEventListener('input', applyFilters)
+        );
+
+        // Функция применения фильтров
+        function applyFilters() {
+            const text = search.value.toLowerCase();
+            const sel  = seller.value;
+            const ord  = sort.value;
+
+            let result = cards.filter(card => {
+                // Поиск по всему тексту в карточке
+                const cardText = card.innerText.toLowerCase();
+                const matchesSearch = !text || cardText.includes(text);
+
+                // Фильтр по поставщику
+                const matchesSupplier = (!sel || card.dataset.seller === sel);
+
+                return matchesSearch && matchesSupplier;
+            });
+
+            if (ord) {
+                result.sort((a, b) =>
+                    ord === 'asc'
+                        ? a.dataset.quantity - b.dataset.quantity
+                        : b.dataset.quantity - a.dataset.quantity
+                );
+            }
+
+            list.innerHTML = '';
+            result.forEach(card => list.appendChild(card));
         }
     </script>
 @endsection
