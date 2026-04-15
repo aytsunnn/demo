@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title')Создание товара@endsection
+@section('title')Редактирование товара@endsection
 
 @section('content')
     <div class="container">

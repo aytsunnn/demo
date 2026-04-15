@@ -15,6 +15,14 @@
                         </div>
                     </div>
                 @endif
+                @if(session('error'))
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" role="img" style="width: 20px; height: 20px;" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                        <div>
+                            {{session('error')}}
+                        </div>
+                    </div>
+                    @endif
 
                 @if($role_id === 1 || $role_id === 2)
                     <div class="card mb-3">
@@ -24,7 +32,7 @@
                                 <button id="editButton" class="btn btn-primary">Редактировать товар</button>
                                 <button id="deleteButton" class="btn btn-primary">Удалить товар</button>
                             @endif
-                            <a href="/" class="btn btn-primary">Заказы</a>
+                            <a href="{{route('orders')}}" class="btn btn-primary">Заказы</a>
                                 <div class="mb-3 mt-2">
                                     <label for="search" class="form-label">Поиск</label>
                                     <input type="text" class="form-control" id="search">

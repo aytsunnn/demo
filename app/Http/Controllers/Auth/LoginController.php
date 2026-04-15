@@ -52,4 +52,10 @@ class LoginController extends Controller
         }
         return false;
     }
+
+    protected function authenticated(Request $request, $user)
+    {
+        return redirect()->intended($this->redirectPath())
+            ->with('info', 'Добро пожаловать, ' . $user->name . ' ' . $user->surname . '! Вы успешно авторизовались.');
+    }
 }
