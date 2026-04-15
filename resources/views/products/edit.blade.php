@@ -150,6 +150,12 @@
                                 <label for="image" class="form-label">Фото</label>
                                 <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" value="{{old('image', $product->image_path)}}" onchange="previewImage(this)">
                                 <input type="hidden" id="remove_image" name="remove_image" value="0">
+                                <div class="alert alert-primary align-items-center mt-2" id="info" role="alert" style="display: none">
+                                    <svg class="bi flex-shrink-0 me-2 mt-2" style="width: 20px; height: 20px;" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+                                    <div>
+                                        Новое изображение будет добавлено после сохранения
+                                    </div>
+                                </div>
 
                                 <div id="imagePreview" class="mt-2">
                                     @if($product->image_path)
@@ -161,6 +167,14 @@
                                         <img src="{{asset('assets/images/picture.png')}}" class="img-thumbnail" style="width: 200px; height: 200px">
                                     @endif
                                 </div>
+
+                                <div class="alert alert-warning align-items-center mt-2" id="warning" role="alert" style="display: none">
+                                    <svg class="bi flex-shrink-0 me-2" role="img" style="width: 20px; height: 20px" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                        Старая картинка будет удалена после сохранения
+                                    </div>
+                                </div>
+
                                 @error('image')
                                 <div class="alert alert-danger d-flex align-items-center mt-2" role="alert">
                                     <svg class="bi flex-shrink-0 me-2" role="img" style="width: 20px; height: 20px" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
@@ -169,6 +183,7 @@
                                     </div>
                                 </div>
                                 @enderror
+
                             </div>
                             <button type="submit" class="btn btn-primary">Сохранить</button>
                         </form>
@@ -183,8 +198,12 @@
         function previewImage(input){
             const preview = document.getElementById('imagePreview');
             const flag = document.getElementById('remove_image');
+            const info = document.getElementById('info');
 
             if (input.files && input.files[0]){
+                if (info){
+                    info.style.display = 'flex';
+                }
                 const reader = new FileReader();
                 reader.onload = function (e){
                     preview.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="width: 200px; height: 200px">`;
@@ -198,10 +217,12 @@
             const image = document.getElementById('imagePreview');
             const preview = document.getElementById('imagePreview');
             const flag = document.getElementById('remove_image');
+            const warning = document.getElementById('warning');
 
             flag.value = '1';
             preview.innerHTML = `<img src="{{asset('assets/images/picture.png')}}" class="img-thumbnail" style="width: 200px; height: 200px">`;
             image.value = '';
+            warning.style.display = 'flex';
         }
     </script>
 @endsection

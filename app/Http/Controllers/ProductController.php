@@ -200,7 +200,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         if ($product->details()->exists()) {
-            return redirect()->route('products')->with('error', 'Нельзя удалить товар, который есть в заказах');
+            return redirect()->route('products')->with('warning', 'Нельзя удалить товар, который есть в заказах');
         }
 
         if ($product->image_path){

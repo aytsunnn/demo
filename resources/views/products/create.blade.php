@@ -155,6 +155,12 @@
                                     </div>
                                 </div>
                                 @enderror
+                                <div class="alert alert-primary d-flex align-items-center mt-2" id="info" role="alert">
+                                    <svg class="bi flex-shrink-0 me-2 mt-2" style="width: 20px; height: 20px;" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+                                    <div>
+                                        Новое изображение будет добавлено после добавления товара
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">Добавить</button>
                         </form>

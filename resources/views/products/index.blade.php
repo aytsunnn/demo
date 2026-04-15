@@ -15,13 +15,13 @@
                         </div>
                     </div>
                 @endif
-                @if(session('error'))
-                    <div class="alert alert-danger d-flex align-items-center" role="alert">
-                        <svg class="bi flex-shrink-0 me-2" role="img" style="width: 20px; height: 20px;" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                        <div>
-                            {{session('error')}}
+                @if(session('warning'))
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" style="width: 20px; height: 20px" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <div>
+                                {{session('warning')}}
+                            </div>
                         </div>
-                    </div>
                     @endif
 
                 @if($role_id === 1 || $role_id === 2)
